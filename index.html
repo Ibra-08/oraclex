@@ -1,12 +1,367 @@
 <!DOCTYPE html>
 <html lang="it">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>OracleX</title>
-  </head>
-  <body>
-    <noscript>Devi abilitare JavaScript per usare OracleX.</noscript>
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OracleX</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: #080010;
+      font-family: Georgia, serif;
+      color: #e2d9f3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    canvas#stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .glow {
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(ellipse, #4c1d9520 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 32px 24px 16px;
+      width: 100%;
+      max-width: 720px;
+    }
+
+    .orb { animation: orbFloat 4s ease-in-out infinite; display: inline-block; margin-bottom: 12px; }
+
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      margin: 0 0 4px;
+      background: linear-gradient(135deg, #e9d5ff, #a855f7, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h1 span { font-weight: 700; }
+
+    .tagline {
+      font-size: 0.78rem;
+      letter-spacing: 0.3em;
+      color: #7c3aed;
+      text-transform: uppercase;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 720px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0 16px 16px;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 60vh;
+      min-height: 200px;
+      padding: 8px 4px;
+      scrollbar-width: thin;
+      scrollbar-color: #4c1d95 transparent;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #4c1d95;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+    }
+
+    .empty p { margin: 0; }
+    .empty small { font-size: 0.72rem; color: #3b1066; }
+
+    .msg { display: flex; animation: fadeIn 0.3s ease; }
+    .msg.user { justify-content: flex-end; }
+    .msg.assistant { justify-content: flex-start; }
+
+    .bubble {
+      max-width: 80%;
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .msg.user .bubble {
+      background: linear-gradient(135deg, #5b21b6, #4c1d95);
+      border: 1px solid #7c3aed60;
+      border-radius: 18px 18px 4px 18px;
+      color: #f3e8ff;
+    }
+
+    .msg.assistant .bubble {
+      background: linear-gradient(135deg, #1a0030, #12001f);
+      border: 1px solid #4c1d9540;
+      border-radius: 18px 18px 18px 4px;
+      color: #d8b4fe;
+    }
+
+    .label {
+      font-size: 0.65rem;
+      color: #7c3aed;
+      display: block;
+      margin-bottom: 6px;
+      letter-spacing: 0.15em;
+    }
+
+    .dots { display: flex; gap: 6px; align-items: center; padding: 4px 0; }
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #a855f7;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      margin-top: 12px;
+      background: linear-gradient(135deg, #1a0030, #0d0020);
+      border: 1px solid #4c1d9560;
+      border-radius: 16px;
+      padding: 10px 12px;
+      box-shadow: 0 0 30px #7c3aed18;
+    }
+
+    textarea {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e2d9f3;
+      font-size: 0.9rem;
+      font-family: Georgia, serif;
+      resize: none;
+      line-height: 1.5;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    button#send {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #a855f7, #7c3aed);
+      border: none;
+      cursor: pointer;
+      color: white;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 15px #a855f740;
+      transition: all 0.2s;
+    }
+
+    button#send:disabled {
+      background: #2d1060;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .hint {
+      text-align: center;
+      font-size: 0.65rem;
+      color: #3b1066;
+      margin: 8px 0 0;
+      letter-spacing: 0.1em;
+    }
+
+    .error { color: #f87171; font-size: 0.78rem; text-align: center; margin: 8px 0; }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stars"></canvas>
+  <div class="glow"></div>
+
+  <header>
+    <div class="orb">
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+        <defs>
+          <radialGradient id="og" cx="40%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#c084fc" stop-opacity="0.9"/>
+            <stop offset="50%" stop-color="#7c3aed" stop-opacity="0.7"/>
+            <stop offset="100%" stop-color="#1e0033" stop-opacity="1"/>
+          </radialGradient>
+          <radialGradient id="gg" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#a855f7" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="bl"><feGaussianBlur stdDeviation="4"/></filter>
+        </defs>
+        <circle cx="40" cy="40" r="38" fill="url(#gg)" filter="url(#bl)"/>
+        <circle cx="40" cy="40" r="30" fill="url(#og)"/>
+        <ellipse cx="33" cy="30" rx="8" ry="5" fill="white" fill-opacity="0.18"/>
+        <circle cx="40" cy="40" r="30" stroke="#a855f7" stroke-width="0.8" stroke-opacity="0.6"/>
+      </svg>
+    </div>
+    <h1>ORACLE<span>X</span></h1>
+    <p class="tagline">Ancient Wisdom · Infinite Knowledge</p>
+  </header>
+
+  <main>
+    <div id="messages">
+      <div class="empty" id="empty">
+        <p>✦ L'Oracolo è pronto a rispondere ✦</p>
+        <small>Poni la tua domanda al cosmo</small>
+      </div>
+    </div>
+    <div id="error" class="error" style="display:none"></div>
+    <div class="input-area">
+      <textarea id="input" placeholder="Chiedi all'Oracolo..." rows="1"></textarea>
+      <button id="send">✦</button>
+    </div>
+    <p class="hint">ENTER per inviare · SHIFT+ENTER per nuova riga</p>
+  </main>
+
+  <script>
+    // Stars
+    const canvas = document.getElementById('stars');
+    const ctx = canvas.getContext('2d');
+    const stars = Array.from({length: 60}, () => ({
+      x: Math.random(), y: Math.random(),
+      r: Math.random() * 1.5 + 0.5,
+      o: Math.random() * 0.5 + 0.1,
+      s: Math.random() * 3 + 2,
+      d: Math.random() * 3,
+    }));
+
+    function drawStars() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const t = Date.now() / 1000;
+      stars.forEach(s => {
+        ctx.beginPath();
+        ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${s.o * (0.5 + 0.5 * Math.sin((t + s.d) / s.s * Math.PI * 2))})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(drawStars);
+    }
+    drawStars();
+
+    // Chat
+    const messages = [];
+    const messagesEl = document.getElementById('messages');
+    const emptyEl = document.getElementById('empty');
+    const inputEl = document.getElementById('input');
+    const sendBtn = document.getElementById('send');
+    const errorEl = document.getElementById('error');
+
+    function addMessage(role, content) {
+      if (emptyEl) emptyEl.remove();
+      const msg = document.createElement('div');
+      msg.className = `msg ${role}`;
+      msg.innerHTML = `<div class="bubble">${role === 'assistant' ? '<span class="label">✦ ORACLEX</span>' : ''}${content}</div>`;
+      messagesEl.appendChild(msg);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function showThinking() {
+      if (emptyEl) emptyEl.remove();
+      const msg = document.createElement('div');
+      msg.className = 'msg assistant';
+      msg.id = 'thinking';
+      msg.innerHTML = '<div class="bubble"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';
+      messagesEl.appendChild(msg);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function hideThinking() {
+      const t = document.getElementById('thinking');
+      if (t) t.remove();
+    }
+
+    async function send() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+      inputEl.value = '';
+      sendBtn.disabled = true;
+      errorEl.style.display = 'none';
+
+      messages.push({ role: 'user', content: text });
+      addMessage('user', text);
+      showThinking();
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Errore');
+        hideThinking();
+        messages.push({ role: 'assistant', content: data.reply });
+        addMessage('assistant', data.reply);
+      } catch(e) {
+        hideThinking();
+        errorEl.textContent = '⚠️ ' + e.message;
+        errorEl.style.display = 'block';
+        messages.pop();
+      } finally {
+        sendBtn.disabled = false;
+        inputEl.focus();
+      }
+    }
+
+    inputEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    });
+    sendBtn.addEventListener('click', send);
+
+    // Auto resize textarea
+    inputEl.addEventListener('input', () => {
+      inputEl.style.height = 'auto';
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+    });
+  </script>
+</body>
 </html>
