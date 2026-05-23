@@ -84,15 +84,10 @@ export default function App() {
 
   return (
     <div style={{
-      minHeight: "100vh",
-      background: "#080010",
-      fontFamily: "'Georgia', serif",
-      color: "#e2d9f3",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      position: "relative",
-      overflow: "hidden",
+      minHeight: "100vh", background: "#080010",
+      fontFamily: "'Georgia', serif", color: "#e2d9f3",
+      display: "flex", flexDirection: "column", alignItems: "center",
+      position: "relative", overflow: "hidden",
     }}>
       <style>{`
         @keyframes pulse {
@@ -112,22 +107,17 @@ export default function App() {
           50% { opacity: 0.6; }
         }
         ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #4c1d95; border-radius: 2px; }
         textarea:focus { outline: none; }
       `}</style>
 
-      {/* Stars */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
         {Array.from({ length: 60 }).map((_, i) => (
           <div key={i} style={{
             position: "absolute",
-            width: Math.random() * 2 + 1,
-            height: Math.random() * 2 + 1,
-            borderRadius: "50%",
-            background: "white",
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
+            width: Math.random() * 2 + 1, height: Math.random() * 2 + 1,
+            borderRadius: "50%", background: "white",
+            left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`,
             opacity: Math.random() * 0.5 + 0.1,
             animation: `starTwinkle ${Math.random() * 3 + 2}s ease-in-out ${Math.random() * 3}s infinite`,
           }} />
@@ -135,25 +125,15 @@ export default function App() {
       </div>
 
       <div style={{
-        position: "fixed", top: "-20%", left: "50%", transform: "translateX(-50%)",
-        width: 600, height: 400,
-        background: "radial-gradient(ellipse, #4c1d9520 0%, transparent 70%)",
-        pointerEvents: "none", zIndex: 0,
-      }} />
-
-      {/* Header */}
-      <div style={{
         width: "100%", maxWidth: 720,
-        padding: "32px 24px 16px",
-        textAlign: "center",
+        padding: "32px 24px 16px", textAlign: "center",
         position: "relative", zIndex: 1,
       }}>
         <div style={{ animation: "orbFloat 4s ease-in-out infinite", display: "inline-block", marginBottom: 12 }}>
           <ORB_SVG />
         </div>
         <h1 style={{
-          fontSize: "2.4rem", fontWeight: 400, letterSpacing: "0.18em",
-          margin: "0 0 4px",
+          fontSize: "2.4rem", fontWeight: 400, letterSpacing: "0.18em", margin: "0 0 4px",
           background: "linear-gradient(135deg, #e9d5ff, #a855f7, #c084fc)",
           WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
         }}>ORACLE<span style={{ fontWeight: 700 }}>X</span></h1>
@@ -162,18 +142,13 @@ export default function App() {
         </p>
       </div>
 
-      {/* Chat */}
       <div style={{
-        width: "100%", maxWidth: 720,
-        flex: 1, display: "flex", flexDirection: "column",
-        padding: "0 16px 16px",
-        position: "relative", zIndex: 1,
+        width: "100%", maxWidth: 720, flex: 1, display: "flex", flexDirection: "column",
+        padding: "0 16px 16px", position: "relative", zIndex: 1,
       }}>
         <div style={{
-          flex: 1, overflowY: "auto",
-          display: "flex", flexDirection: "column", gap: 16,
-          minHeight: 0, maxHeight: "60vh",
-          padding: "8px 4px",
+          flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 16,
+          minHeight: 0, maxHeight: "60vh", padding: "8px 4px",
         }}>
           {messages.length === 0 && (
             <div style={{
@@ -182,9 +157,7 @@ export default function App() {
               letterSpacing: "0.08em", animation: "fadeIn 0.8s ease",
             }}>
               <p style={{ margin: 0 }}>✦ L'Oracolo è pronto a rispondere ✦</p>
-              <p style={{ margin: "8px 0 0", fontSize: "0.72rem", color: "#3b1066" }}>
-                Poni la tua domanda al cosmo
-              </p>
+              <p style={{ margin: "8px 0 0", fontSize: "0.72rem", color: "#3b1066" }}>Poni la tua domanda al cosmo</p>
             </div>
           )}
           {messages.map((msg, i) => (
@@ -196,9 +169,7 @@ export default function App() {
               <div style={{
                 maxWidth: "80%", padding: "12px 16px",
                 borderRadius: msg.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
-                background: msg.role === "user"
-                  ? "linear-gradient(135deg, #5b21b6, #4c1d95)"
-                  : "linear-gradient(135deg, #1a0030, #12001f)",
+                background: msg.role === "user" ? "linear-gradient(135deg, #5b21b6, #4c1d95)" : "linear-gradient(135deg, #1a0030, #12001f)",
                 border: msg.role === "user" ? "1px solid #7c3aed60" : "1px solid #4c1d9540",
                 fontSize: "0.88rem", lineHeight: 1.6,
                 color: msg.role === "user" ? "#f3e8ff" : "#d8b4fe",
@@ -218,8 +189,7 @@ export default function App() {
               <div style={{
                 padding: "12px 16px",
                 background: "linear-gradient(135deg, #1a0030, #12001f)",
-                border: "1px solid #4c1d9540",
-                borderRadius: "18px 18px 18px 4px",
+                border: "1px solid #4c1d9540", borderRadius: "18px 18px 18px 4px",
               }}>
                 <ThinkingDots />
               </div>
@@ -233,36 +203,26 @@ export default function App() {
         <div style={{
           display: "flex", gap: 10, alignItems: "flex-end", marginTop: 12,
           background: "linear-gradient(135deg, #1a0030, #0d0020)",
-          border: "1px solid #4c1d9560",
-          borderRadius: 16, padding: "10px 12px",
+          border: "1px solid #4c1d9560", borderRadius: 16, padding: "10px 12px",
           boxShadow: "0 0 30px #7c3aed18",
         }}>
           <textarea
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Chiedi all'Oracolo..."
-            rows={1}
+            value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKeyDown}
+            placeholder="Chiedi all'Oracolo..." rows={1}
             style={{
-              flex: 1, background: "transparent", border: "none",
-              color: "#e2d9f3", fontSize: "0.9rem",
-              fontFamily: "Georgia, serif", resize: "none",
-              lineHeight: 1.5, maxHeight: 120, overflowY: "auto",
+              flex: 1, background: "transparent", border: "none", color: "#e2d9f3",
+              fontSize: "0.9rem", fontFamily: "Georgia, serif",
+              resize: "none", lineHeight: 1.5, maxHeight: 120, overflowY: "auto",
             }}
           />
-          <button
-            onClick={sendMessage}
-            disabled={loading || !input.trim()}
-            style={{
-              width: 40, height: 40, borderRadius: "50%",
-              background: loading || !input.trim() ? "#2d1060" : "linear-gradient(135deg, #a855f7, #7c3aed)",
-              border: "none", cursor: loading || !input.trim() ? "default" : "pointer",
-              color: "white", fontSize: "1.1rem",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              flexShrink: 0,
-              transition: "all 0.2s",
-            }}
-          >✦</button>
+          <button onClick={sendMessage} disabled={loading || !input.trim()} style={{
+            width: 40, height: 40, borderRadius: "50%",
+            background: loading || !input.trim() ? "#2d1060" : "linear-gradient(135deg, #a855f7, #7c3aed)",
+            border: "none", cursor: loading || !input.trim() ? "default" : "pointer",
+            color: "white", fontSize: "1.1rem",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            flexShrink: 0, transition: "all 0.2s",
+          }}>✦</button>
         </div>
         <p style={{ textAlign: "center", fontSize: "0.65rem", color: "#3b1066", margin: "8px 0 0", letterSpacing: "0.1em" }}>
           ENTER per inviare · SHIFT+ENTER per nuova riga

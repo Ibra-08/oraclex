@@ -10,18 +10,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
+        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        model: "llama-3.3-70b-versatile",
         max_tokens: 1000,
-        system: "You are OracleX, a powerful and mysterious AI oracle. You speak with authority, depth, and a touch of enigmatic wisdom. Be helpful but maintain an air of ancient knowledge and cosmic perspective. Always respond in the same language the user writes in.",
-        messages,
+        messages: [
+          {
+            role: "system",
+            content: "You are OracleX, a powerful and mysterious AI oracle. You speak with authority, depth, and a touch of enigmatic wisdom. Be helpful but maintain an air of ancient knowledge and cosmic perspective. Always respond in the same language the user writes in.",
+          },
+          ...messages,
+        ],
       }),
     });
 
@@ -31,7 +35,7 @@ export default async function handler(req, res) {
     }
 
     const data = await response.json();
-    const reply = data.content.map(b => b.text || "").join("");
+    const reply = data.choices[0].message.content;
     return res.status(200).json({ reply });
 
   } catch (error) {
